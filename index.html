@@ -103,7 +103,7 @@ console.log(`State logged ${index_num}`);
 }
 }
 window.addEventListener("keydown",(event)=>{
-    if (event.key===""||event.key==="ArrowRight"){
+    if (event.key==="ArrowRight"){
         current_index++;
         if (current_index>=states.length){current_index=0;}
         the_vanta_effect(current_index);
