@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<title>Farewell</title>
+    <style>
+        /* Premium Font Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+            background-color: #050505; /* Solid base to prevent flickering */
+        }
+
+        /* The Canvas Container - Uses Flexbox to center everything */
+        #Vanta-Canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-container {
+            z-index: 10;
+            pointer-events: none; /* Logic: Mouse moves 'through' text to birds */
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        #main-title {
+            /* Responsive text: Small on mobile, large on big screens */
+            font-size: clamp(3rem, 10vw, 7rem); 
+            font-weight: 800;
+            letter-spacing: -3px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            line-height: 0.9;
+            
+            /* Cinematic Shadow Logic */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 40px rgba(255, 255, 255, 0.1);
+        }
+
+        #sub-title {
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            font-weight: 300;
+            letter-spacing: 6px; /* Airy, modern feel */
+            opacity: 0.7;
+            text-transform: uppercase;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+<div id="Vanta-Canvas">
+    <div class="hero-container">
+        <h1 id="main-title">Farewell 2026</h1>
+        <p id="sub-title">The end of an era, the start of a journey.</p>
+    </div>
+</div>
+<script src="libs/three.min.js"></script>
+<script src ="libs/vanta.birds.min.js"></script>
+<script>
+const states = [
+    { speed: 4, size: 2, qty: 4, back: 0x000000, c1: 0x00f2ff, c2: 0x0062ff }, // State 0
+    { speed: 6, size: 2, qty: 5, back: 0x0b001a, c1: 0xff00cc, c2: 0xbc00ff }, // State 1
+    { speed: 8, size: 2, qty: 6, back: 0x1a0d00, c1: 0xffbb00, c2: 0xff4400 }, // State 2
+    { speed: 5, size: 1.5, qty: 8, back: 0x000d00, c1: 0x00ff41, c2: 0x003b00 } // State 3
+];
+let current_index=0
+let vanta_effect=null
+function the_vanta_effect(index_num){
+    try{{if (vanta_effect){vanta_effect.destroy()};}
+    const config= states[index_num];
+    vanta_effect=VANTA.BIRDS({
+  el: "#Vanta-Canvas",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+  scale: 1.00,
+  scaleMobile: 1.00,
+  birdSize: config.size,
+  speedLimit: config.speed,
+  quantity: config.qty,
+  backgroundColor:config.back,
+  color1: config.c1, // Primary bird color
+  color2: config.c2, // Secondary bird color (creates the gradient)
+});
+console.log(`State logged ${index_num}`);
+}catch (e){
+    console.error("couldnt log the state some error occured",e);
+}
+}
+window.addEventListener("keydown",(event)=>{
+    if (event.key===""||event.key==="ArrowRight"){
+        current_index++;
+        if (current_index>=states.length){current_index=0;}
+        the_vanta_effect(current_index);
+    }
+});
+the_vanta_effect(current_index)
+
+
+    
+</script>
+</body>
+</html> 
