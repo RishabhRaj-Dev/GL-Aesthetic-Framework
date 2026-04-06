@@ -71,15 +71,17 @@
 <script src="libs/three.min.js"></script>
 <script src ="libs/vanta.birds.min.js"></script>
 <script>
-const states = [
-    { speed: 4, size: 2, qty: 4, back: 0x000000, c1: 0x00f2ff, c2: 0x0062ff }, // State 0
-    { speed: 6, size: 2, qty: 5, back: 0x0b001a, c1: 0xff00cc, c2: 0xbc00ff }, // State 1
-    { speed: 8, size: 2, qty: 6, back: 0x1a0d00, c1: 0xffbb00, c2: 0xff4400 }, // State 2
-];
 let current_index=0
+const states = [// State 0
+    { speed: 6, size: 2, qty: 5, back: 0x0b001a, c1: 0xff00cc, c2: 0xbc00ff },//State 0
+    { speed: 4, size: 2, qty: 4, back: 0x000000, c1: 0x00f2ff, c2: 0x0062ff }, //State 1
+    { speed: 8, size: 2, qty: 6, back: 0x1a0d00, c1: 0xffbb00, c2: 0xff4400 }, //State 2
+    { speed: 5, size: 1.5, qty: 8, back: 0x000d00, c1: 0x00ff41, c2: 0x003b00 },//State 3
+    { speed: 3, size: 2.4, qty: 5, back: 0x7192f, c1: 0xff0000, c2: 0xd1ff }//State 4
+];
 let vanta_effect=null
 function the_vanta_effect(index_num){
-    try{{if (vanta_effect){vanta_effect.destroy()};}
+    try{{if (vanta_effect){vanta_effect.destroy()};vanta_effect=null}
     const config= states[index_num];
     vanta_effect=VANTA.BIRDS({
   el: "#Vanta-Canvas",
@@ -103,16 +105,14 @@ console.log(`State logged ${index_num}`);
 }
 }
 window.addEventListener("keydown",(event)=>{
-    if (event.key==="ArrowRight"){
+    if (event.key==="ArrowRight")
+    {
         current_index++;
         if (current_index>=states.length){current_index=0;}
         the_vanta_effect(current_index);
     }
-});
+}); 
 the_vanta_effect(current_index)
-
-
-    
 </script>
 </body>
 </html> 
