@@ -46,43 +46,68 @@
             text-transform: uppercase;
         }
     </style>
+    <script src="libs/three.min.js"></script>
+    <script src="libs/p5.min.js"></script>
+
+<script src="libs/vanta.birds.min.js"></script>
+<script src="libs/vanta.clouds.min.js"></script>
+<script src="libs/vanta.clouds2.min.js"></script>
+<script src="libs/vanta.dots.min.js"></script>
+<script src="libs/vanta.globe.min.js"></script>
+<script src="libs/vanta.halo.min.js"></script>
+<script src="libs/vanta.net.min.js"></script>
+<script src="libs/vanta.rings.min.js"></script>
+<script src="libs/vanta.topology.min.js"></script>
+<script src="libs/vanta.waves.min.js"></script>
 </head>
 <body>
 
 <div id="Vanta-Canvas">
     <div class="hero-container">
         <h1 id="main-title">Farewell 2026</h1>
-        <p id="sub-title">The end of an era, the start of a journey.</p>
+        <p id="sub-title">Lorep Ipsum</p>
     </div>
 </div>
 
-<script src="libs/three.min.js"></script>
-<script src="libs/vanta.birds.min.js"></script>
+
 
 <script>
-const states = [
-    { speed: 4, size: 2, qty: 4, back: 0x000000, c1: 0x00f2ff, c2: 0x0062ff },
-    { speed: 6, size: 2, qty: 5, back: 0x0b001a, c1: 0xff00cc, c2: 0xbc00ff },
-    { speed: 8, size: 2, qty: 6, back: 0x1a0d00, c1: 0xffbb00, c2: 0xff4400 },
-];
+let current_state = 0;
+let the_vanta_effect = null;
+let data = null; // Global variable
 
-let current_index = 0;
-let vanta_effect = null;
-
-function the_vanta_effect(index_num) {
+async function get_states() {
     try {
-        if (vanta_effect) {
-            vanta_effect.destroy();
-            vanta_effect = null; // Explicitly nullify
-            
-            // FORCE CLEAN: Wipe the internal HTML of the container
-            // This forces the browser to drop the old WebGL context 
-            const container = document.getElementById("Vanta-Canvas");
-            container.innerHTML = '<div class="hero-container"><h1 id="main-title">Farewell 2026</h1><p id="sub-title">The end of an era, the start of a journey.</p></div>';
+        // Step 1: Get the response envelope
+        const response = await fetch("states_presentation.json");
+        // Step 2: Open the envelope and put it in our global variable
+        data = await response.json();
+        
+        // Step 3: Now that the pantry is full, start the first slide
+        the_state(); 
+    } catch (e) {
+        console.error(`Error reading the file: ${e}`);
+    }
+}
+
+function the_state() {
+    try {
+        // 1. Clean up the old effect
+        if (the_vanta_effect) {
+            the_vanta_effect.destroy();
+            the_vanta_effect = null;
         }
 
-        const config = states[index_num];
-        vanta_effect = VANTA.BIRDS({
+        // 2. Update the Title (Note the capital 'B' in Id)
+        const title = document.getElementById("main-title");
+        title.innerText = data.part[current_state];
+
+        // 3. Trigger the Vanta Effect
+        // We get the string (e.g., "BIRDS") from our JSON
+        const effectName = data.effects[current_state]; 
+
+        // We use that string to tell VANTA which function to run
+        the_vanta_effect = VANTA[effectName]({
             el: "#Vanta-Canvas",
             mouseControls: true,
             touchControls: true,
@@ -90,31 +115,29 @@ function the_vanta_effect(index_num) {
             minHeight: 200.00,
             minWidth: 200.00,
             scale: 1.00,
-            scaleMobile: 1.00,
-            birdSize: config.size,
-            speedLimit: config.speed,
-            quantity: config.qty,
-            backgroundColor: config.back,
-            color1: config.c1,
-            color2: config.c2,
+            scaleMobile: 1.00
         });
+
+        console.log(`The state number is: ${current_state}`);
     } catch (e) {
-        console.error("State transition error:", e);
+        console.error("Failed to load the state:", e);
     }
 }
 
-// Fixed Keydown Logic
+// Keydown Logic
 window.addEventListener("keydown", (event) => {
-    // In your original code, event.key === "" was likely causing issues. 
-    // Use " " for Spacebar.
+    // Check if data exists yet (prevents crashing if user clicks too fast)
+    if (!data) return;
+
     if (event.key === " " || event.key === "ArrowRight") {
-        current_index = (current_index + 1) % states.length;
-        the_vanta_effect(current_index);
+        // Use the length of the 'part' array to know when to loop
+        current_state = (current_state + 1) % data.part.length;
+        the_state(); // No need to pass current_state, it's global!
     }
 });
 
-// Initialize on load
-the_vanta_effect(current_index);
+// The "Power Button"
+get_states();
 </script>
 </body>
 </html>
