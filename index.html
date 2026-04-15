@@ -75,6 +75,7 @@
 let current_state = 0;
 let the_vanta_effect = null;
 let data = null; // Global variable
+transition_check=false;
 
 async function get_states() {
     try {
@@ -82,7 +83,6 @@ async function get_states() {
         const response = await fetch("states_presentation.json");
         // Step 2: Open the envelope and put it in our global variable
         data = await response.json();
-        
         // Step 3: Now that the pantry is full, start the first slide
         the_state(); 
     } catch (e) {
@@ -97,6 +97,14 @@ function the_state() {
             the_vanta_effect.destroy();
             the_vanta_effect = null;
         }
+        const canvas = document.getElementById("Vanta-Canvas");
+        canvas.style.background = "";
+        if(transition_check===true){
+        document.getElementById("main-title").innerText = "Transition...";
+        document.getElementById("Vanta-Canvas").style.background = "black";
+        console.log(`transition state`);
+        return;
+        };
 
         // 2. Update the Title (Note the capital 'B' in Id)
         const title = document.getElementById("main-title");
@@ -105,9 +113,15 @@ function the_state() {
         // 3. Trigger the Vanta Effect
         // We get the string (e.g., "BIRDS") from our JSON
         const effectName = data.effects[current_state]; 
+        if(!effectName){
+        document.getElementById("Vanta-Canvas").style.background="black";
+        console.log("State set to Black Background");
+            return;
+        }
+
 
         // We use that string to tell VANTA which function to run
-        the_vanta_effect = VANTA[effectName]({
+       the_vanta_effect = VANTA[effectName]({
             el: "#Vanta-Canvas",
             mouseControls: true,
             touchControls: true,
@@ -115,8 +129,10 @@ function the_state() {
             minHeight: 200.00,
             minWidth: 200.00,
             scale: 1.00,
-            scaleMobile: 1.00
+            scaleMobile: 1.00,
+            texturePath: (effectName==="Clouds2") ? null:"./gallery/blue_noise.png"
         });
+    
 
         console.log(`The state number is: ${current_state}`);
     } catch (e) {
@@ -129,12 +145,20 @@ window.addEventListener("keydown", (event) => {
     // Check if data exists yet (prevents crashing if user clicks too fast)
     if (!data) return;
 
-    if (event.key === " " || event.key === "ArrowRight") {
+    if (event.key === "ArrowRight") {
         // Use the length of the 'part' array to know when to loop
+        transition_check=false
         current_state = (current_state + 1) % data.part.length;
         the_state(); // No need to pass current_state, it's global!
     }
 });
+window.addEventListener("keydown", (event)=>{//quantum rendering
+    if(event.key===" "){
+       transition_check=true;
+       the_state()
+    }
+}
+);
 
 // The "Power Button"
 get_states();
