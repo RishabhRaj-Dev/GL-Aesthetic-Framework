@@ -68,15 +68,26 @@
         <p id="sub-title">Lorep Ipsum</p>
     </div>
 </div>
-
-
-
 <script>
 let current_state = 0;
 let the_vanta_effect = null;
 let data = null; // Global variable
-transition_check=false;
-
+let transition_check=false;
+const vantaStore = {
+    "BIRDS":    { bg: "backgroundColor", palettes: [0x080808, 0x001219, 0x001122, 0x0a0a0a, 0x050505] },
+    "FOG":      { bg: "highlightColor",  palettes: [0x1a1a1a, 0x242424, 0x0d1b2a, 0x1b263b, 0x0a0a0a] }, // Fog uses highlights
+    "WAVES":    { bg: "backgroundColor", palettes: [0xb30000, 0x5588, 0x4d0000, 0x2b0000, 0x1a0000] }, // Bloody Red
+    "CLOUDS":   { bg: "backgroundColor", palettes: [0x050505, 0x001122, 0x080808, 0x0a0a0a, 0x000000] },
+    "CLOUDS2":  { bg: "backgroundColor", palettes: [0x050505, 0x0d1b2a, 0x1a1a1a, 0x080808, 0x000000] },
+    "GLOBE":    { bg: "backgroundColor", palettes: [0x0a1128, 0x001219, 0x050505, 0x0d1b2a, 0x1a1a1a] }, // Speech Vibe
+    "NET":      { bg: "backgroundColor", palettes: [0x050505, 0x080808, 0x001122, 0x0a0a0a, 0x000000] },
+    "CELLS":    { bg: "color2",          palettes: [0x0a0a0a, 0x1a1a1a, 0x001219, 0x050505, 0x080808] }, // Cells uses color2
+    "TRUNK":    { bg: "backgroundColor", palettes: [0x050505, 0x0a0a0a, 0x1a1a1a, 0x0d1b2a, 0x001219] },
+    "TOPOLOGY": { bg: "backgroundColor", palettes: [0x050505, 0x0a0a0a, 0x080808, 0x000000, 0x111111] },
+    "DOTS":     { bg: "backgroundColor", palettes: [0x050505, 0x0a0a0a, 0x080808, 0x000000, 0x111111] },
+    "RINGS":    { bg: "backgroundColor", palettes: [0x050505, 0x0a0a0a, 0x080808, 0x001122, 0x1a1a1a] },
+    "HALO":     { bg: "backgroundColor", palettes: [0x000000, 0x050505, 0x0a0a0a, 0x080808, 0x0d1b2a] }
+};
 async function get_states() {
     try {
         // Step 1: Get the response envelope
@@ -89,9 +100,21 @@ async function get_states() {
         console.error(`Error reading the file: ${e}`);
     }
 }
-
 function the_state() {
     try {
+        const effectName = data.effects[current_state];
+        if (effectName===data.effects[current_state-1]||(current_state===data.length && effectName===data.effects[0])){
+        const title = document.getElementById("main-title");
+        title.innerText = data.part[current_state];
+        const config = vantaStore[effectName];
+        const randomBg = config["palettes"][Math.floor(Math.random() * config.palettes.length)];
+        the_vanta_effect.setOptions({
+            [config.bg]:randomBg
+        }
+        
+        )
+        return;
+        };
         // 1. Clean up the old effect
         if (the_vanta_effect) {
             the_vanta_effect.destroy();
@@ -100,8 +123,13 @@ function the_state() {
         const canvas = document.getElementById("Vanta-Canvas");
         canvas.style.background = "";
         if(transition_check===true){
-        document.getElementById("main-title").innerText = "Transition...";
-        document.getElementById("Vanta-Canvas").style.background = "black";
+        document.getElementById("main-title").innerText = "Waves And Wishes";
+        const config = vantaStore["WAVES"];
+        const randomBg = config.palettes[Math.floor(Math.random() * config.palettes.length)];
+        the_vanta_effect= VANTA.WAVES({
+            el:"#Vanta-Canvas",
+            [config.bg]:randomBg
+        })
         console.log(`transition state`);
         return;
         };
@@ -112,14 +140,12 @@ function the_state() {
 
         // 3. Trigger the Vanta Effect
         // We get the string (e.g., "BIRDS") from our JSON
-        const effectName = data.effects[current_state]; 
+         
         if(!effectName){
         document.getElementById("Vanta-Canvas").style.background="black";
         console.log("State set to Black Background");
             return;
         }
-
-
         // We use that string to tell VANTA which function to run
        the_vanta_effect = VANTA[effectName]({
             el: "#Vanta-Canvas",
@@ -132,18 +158,14 @@ function the_state() {
             scaleMobile: 1.00,
             texturePath: (effectName==="Clouds2") ? null:"./gallery/blue_noise.png"
         });
-    
-
         console.log(`The state number is: ${current_state}`);
     } catch (e) {
         console.error("Failed to load the state:", e);
     }
 }
-
 // Keydown Logic
 window.addEventListener("keydown", (event) => {
-    // Check if data exists yet (prevents crashing if user clicks too fast)
-    if (!data) return;
+    // Check if data exists yet (prevents crashing if user clicks too fast
 
     if (event.key === "ArrowRight") {
         // Use the length of the 'part' array to know when to loop
