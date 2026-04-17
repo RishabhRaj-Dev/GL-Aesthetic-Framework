@@ -7,44 +7,69 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;800&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #050505; }
+        body, html { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0;
+    display: flex; 
+    background-color: #050505; 
+}
 
-        #Vanta-Canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
+/* Keep your existing * and body styles, update these: */
+.wave {
+    width: 10vw; 
+    height: 100vh;
+    position: relative; 
+    /* This is the attribute that changes the color */
+    background-color: #ffffff; 
+    border-right: 1px solid rgba(0, 0, 0, 0.1); /* Changed border to dark for visibility */
+    z-index: 20;
+}
 
-        .hero-container {
-            z-index: 10;
-            pointer-events: none;
-            font-family: 'Inter', sans-serif;
-            color: #ffffff;
-            padding: 20px;
-        }
+#Vanta-Canvas {
+    flex: 1; 
+    height: 100vh;
+    position: relative;
+}
 
-        #main-title {
-            font-size: clamp(3rem, 10vw, 7rem); 
-            font-weight: 800;
-            letter-spacing: -3px;
-            text-transform: uppercase;
-            line-height: 0.9;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-        }
+.hero-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color:#ffffff
+}
 
-        #sub-title {
-            font-size: clamp(0.8rem, 2vw, 1.2rem);
-            font-weight: 300;
-            letter-spacing: 6px;
-            opacity: 0.7;
-            text-transform: uppercase;
-        }
+.left-container {
+    position: absolute;
+    top: 50%;
+    left: 50%; /* Center it within the 10vw width */
+    transform: translate(-50%, -50%) rotate(180deg); /* Centers and rotates */
+    writing-mode: vertical-lr; 
+    white-space: nowrap;
+    pointer-events: none;
+    color: #000000;
+}
+
+#main-title {
+    font-size: clamp(2rem, 10vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -3px;
+    text-transform: uppercase;
+    line-height: 0.9;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    margin: 0;
+}
+
+#sub-title {
+    font-size: clamp(4rem, 1.5vw, 1.2rem); /* Slightly smaller to fit the sidebar */
+    font-weight: 300;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    margin: 0;
+}
     </style>
     <script src="libs/three.min.js"></script>
     <script src="libs/p5.min.js"></script>
@@ -62,10 +87,15 @@
 </head>
 <body>
 
+<div class="wave">
+    <div class="left-container">
+        <h2 id="sub-title">Waves and Wishes</h2>
+    </div>
+</div>
+
 <div id="Vanta-Canvas">
     <div class="hero-container">
         <h1 id="main-title">Farewell 2026</h1>
-        <p id="sub-title">Lorep Ipsum</p>
     </div>
 </div>
 <script>
@@ -103,18 +133,18 @@ async function get_states() {
 function the_state() {
     try {
         const effectName = data.effects[current_state];
-        if (effectName===data.effects[current_state-1]||(current_state===data.length && effectName===data.effects[0])){
-        const title = document.getElementById("main-title");
-        title.innerText = data.part[current_state];
-        const config = vantaStore[effectName];
-        const randomBg = config["palettes"][Math.floor(Math.random() * config.palettes.length)];
-        the_vanta_effect.setOptions({
-            [config.bg]:randomBg
-        }
+        //if (effectName===data.effects[current_state-1]||(current_state===data.length && effectName===data.effects[0])){
+        //const title = document.getElementById("main-title");
+        //title.innerText = data.part[current_state];
+        //const config = vantaStore[effectName];
+        //const randomBg = config["palettes"][Math.floor(Math.random() * config.palettes.length)];
+        //the_vanta_effect.setOptions({
+          //  [config.bg]:randomBg
+        //}
         
-        )
-        return;
-        };
+        //)
+        //return;
+        //};
         // 1. Clean up the old effect
         if (the_vanta_effect) {
             the_vanta_effect.destroy();
@@ -122,6 +152,43 @@ function the_state() {
         }
         const canvas = document.getElementById("Vanta-Canvas");
         canvas.style.background = "";
+                const title = document.getElementById("main-title");
+        const currentPartText = data.part[current_state]; // Get the text first
+        title.innerText = currentPartText;
+
+        // CORRECTED LOGIC:
+        if (currentPartText === "Games") {
+            console.log("Stopping Vanta for Games or Empty Effect");
+            canvas.style.backgroundImage ="url('./gaming.png')" ; 
+            canvas.style.backgroundRepeat = "no-repeat";
+            canvas.style.backgroundSize = "cover";
+             /* KEEPS IT CENTERED */
+            return; // Now it will actually stop here
+        }
+        if (currentPartText === "Q/A(Round3)") {
+            console.log("QNA");
+            canvas.style.backgroundImage ="url('./qea.png')" ; 
+            canvas.style.backgroundRepeat = "no-repeat";
+            canvas.style.backgroundSize = "cover";
+             /* KEEPS IT CENTERED */
+            return; // Now it will actually stop here
+        }
+        if (currentPartText === "Talent Round(Round2)") {
+            console.log("QNA");
+            canvas.style.backgroundImage ="url('./t.png')" ; 
+            canvas.style.backgroundRepeat = "no-repeat";
+            canvas.style.backgroundSize = "cover";
+             /* KEEPS IT CENTERED */
+            return; // Now it will actually stop here
+        }
+        if (currentPartText === "Ramp Walk(Round1)") {
+            console.log("QNA");
+            canvas.style.backgroundImage ="url('./ramp.png')" ; 
+            canvas.style.backgroundRepeat = "no-repeat";
+            canvas.style.backgroundSize = "cover";
+             /* KEEPS IT CENTERED */
+            return; // Now it will actually stop here
+        }
         if(transition_check===true){
         document.getElementById("main-title").innerText = "Waves And Wishes";
         const config = vantaStore["WAVES"];
@@ -135,18 +202,10 @@ function the_state() {
         };
 
         // 2. Update the Title (Note the capital 'B' in Id)
-        const title = document.getElementById("main-title");
-        title.innerText = data.part[current_state];
+       // 2. Update the Title
 
         // 3. Trigger the Vanta Effect
         // We get the string (e.g., "BIRDS") from our JSON
-         
-        if(!effectName){
-        document.getElementById("Vanta-Canvas").style.background="black";
-        console.log("State set to Black Background");
-            return;
-        }
-        // We use that string to tell VANTA which function to run
        the_vanta_effect = VANTA[effectName]({
             el: "#Vanta-Canvas",
             mouseControls: true,
