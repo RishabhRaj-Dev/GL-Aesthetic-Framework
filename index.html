@@ -240,6 +240,16 @@ window.addEventListener("keydown", (event)=>{//quantum rendering
     }
 }
 );
+window.addEventListener("keydown", (event) => {
+    // Check if data exists yet (prevents crashing if user clicks too fast
+
+    if (event.key === "ArrowLeft") {
+        // Use the length of the 'part' array to know when to loop
+        transition_check=false
+        current_state = (current_state-1);
+        the_state(); // No need to pass current_state, it's global!
+    }
+});
 
 // The "Power Button"
 get_states();
